@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:polaris_assignment/core/helpers/widgets_and_attributes.dart';
+import 'package:polaris_assignment/enums/component_type_enum.dart';
 import 'package:polaris_assignment/models/check_box_field_model.dart';
 import 'package:polaris_assignment/models/form_data.dart';
 import 'package:polaris_assignment/models/survey_form_model.dart';
@@ -36,7 +37,7 @@ class SurveyCheckBoxWidget extends StatelessWidget {
             homeCubit.formFields[metaInfo?.label ?? ""] = FormDataField(
                 label: metaInfo?.label ?? "",
                 checkBoxValue: checkboxField.selectedOptions,
-                type: "CheckBoxes");
+                type: ComponentTypeEnum.checkBoxes.componentName);
           },
         ),
         if ((metaInfo?.mandatory?.toLowerCase() == 'yes') &&

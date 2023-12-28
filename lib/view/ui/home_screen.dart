@@ -5,6 +5,7 @@ import 'package:polaris_assignment/core/helpers/color_constants.dart';
 import 'package:polaris_assignment/core/helpers/constants.dart';
 import 'package:polaris_assignment/core/helpers/widgets_and_attributes.dart';
 import 'package:polaris_assignment/core/isolate/background_thread.dart';
+import 'package:polaris_assignment/enums/component_type_enum.dart';
 import 'package:polaris_assignment/models/survey_form_model.dart';
 import 'package:polaris_assignment/view/cubit/home_cubit.dart';
 import 'package:polaris_assignment/view/global_widgets/primary_button.dart';
@@ -101,17 +102,23 @@ class _HomeScreenState extends State<HomeScreen> {
                               String? componentType = _homeCubit
                                   .surveyFormData?.fields?[index].componentType;
 
-                              if (componentType == "EditText") {
+                              if (componentType ==
+                                  ComponentTypeEnum.editText.componentName) {
                                 return SurveyTextFieldWidget(
                                     metaInfo: metaInfo);
-                              } else if (componentType == "CheckBoxes") {
+                              } else if (componentType ==
+                                  ComponentTypeEnum.checkBoxes.componentName) {
                                 return SurveyCheckBoxWidget(metaInfo: metaInfo);
-                              } else if (componentType == "DropDown") {
+                              } else if (componentType ==
+                                  ComponentTypeEnum.dropDown.componentName) {
                                 return SurveyDropDownWidget(metaInfo: metaInfo);
-                              } else if (componentType == "RadioGroup") {
+                              } else if (componentType ==
+                                  ComponentTypeEnum.radioGroup.componentName) {
                                 return SurveyRadioButtonWidget(
                                     metaInfo: metaInfo);
-                              } else if (componentType == "CaptureImages") {
+                              } else if (componentType ==
+                                  ComponentTypeEnum
+                                      .captureImages.componentName) {
                                 return SurveyCaptureImageWidget(
                                     metaInfo: metaInfo);
                               } else {

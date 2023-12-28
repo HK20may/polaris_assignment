@@ -2,7 +2,7 @@ import 'package:polaris_assignment/models/gallery_image.dart';
 import 'package:polaris_assignment/view_model/service/survey_image_to_server_service.dart';
 
 class ImageUploadWorker {
-  /// Starts to [doWork] in the background
+  /// Starts to [doWork] ie upload image to server in the background
   Future<List<String>> doWork(List<GalleryImage> galleryImages) async {
     List<String> galleryImageUrl = [];
     await Future.forEach(galleryImages, (GalleryImage image) async {

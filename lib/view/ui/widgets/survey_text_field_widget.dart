@@ -3,6 +3,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:polaris_assignment/core/helpers/widgets_and_attributes.dart';
+import 'package:polaris_assignment/enums/component_type_enum.dart';
+import 'package:polaris_assignment/enums/input_type_enum.dart';
 import 'package:polaris_assignment/models/form_data.dart';
 import 'package:polaris_assignment/models/survey_form_model.dart';
 import 'package:polaris_assignment/view/cubit/home_cubit.dart';
@@ -30,17 +32,24 @@ class SurveyTextFieldWidget extends StatelessWidget {
         CustomTextField(
           labelText: metaInfo?.label ?? "",
           controller: _textEditingController,
-          keyboardType: metaInfo?.componentInputType == "INTEGER"
-              ? TextInputType.number
-              : null,
-          isNumber: metaInfo?.componentInputType == "INTEGER" ? true : false,
-          maxLength: metaInfo?.componentInputType == "INTEGER" ? 10 : null,
+          keyboardType:
+              metaInfo?.componentInputType == InputTypeEnum.integer.typeName
+                  ? TextInputType.number
+                  : null,
+          isNumber:
+              metaInfo?.componentInputType == InputTypeEnum.integer.typeName
+                  ? true
+                  : false,
+          maxLength:
+              metaInfo?.componentInputType == InputTypeEnum.integer.typeName
+                  ? 10
+                  : null,
           textWatcher: (value) {
             homeCubit.storedData[metaInfo?.label ?? ""] = value;
             homeCubit.formFields[metaInfo?.label ?? ""] = FormDataField(
                 label: metaInfo?.label ?? "",
                 textValue: value,
-                type: "EditText");
+                type: ComponentTypeEnum.editText.componentName);
           },
         ),
         sizedBoxH4,

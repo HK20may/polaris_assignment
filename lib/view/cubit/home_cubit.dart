@@ -6,6 +6,7 @@ import 'package:hive/hive.dart';
 import 'package:polaris_assignment/core/helpers/constants.dart';
 import 'package:polaris_assignment/core/isolate/background_thread.dart';
 import 'package:polaris_assignment/core/utils/toast.dart';
+import 'package:polaris_assignment/enums/component_type_enum.dart';
 import 'package:polaris_assignment/models/form_data.dart';
 import 'package:polaris_assignment/models/survey_form_model.dart';
 import 'package:polaris_assignment/view_model/service/survey_form_service.dart';
@@ -58,23 +59,24 @@ class HomeCubit extends Cubit<HomeState> {
         mandatoryFields.add(label);
       }
 
-      if (field.componentType == "RadioGroup") {
+      if (field.componentType == ComponentTypeEnum.radioGroup.componentName) {
         storedData[label] = metaInfo?.options?[0] ?? "";
         formFields[label] = FormDataField(
             label: label,
             textValue: metaInfo?.options?[0] ?? "",
-            type: "RadioGroup");
+            type: ComponentTypeEnum.radioGroup.componentName);
       }
 
-      if (field.componentType == "DropDown") {
+      if (field.componentType == ComponentTypeEnum.dropDown.componentName) {
         storedData[label] = metaInfo?.options?[0] ?? "";
         formFields[label] = FormDataField(
             label: label,
             textValue: metaInfo?.options?[0] ?? "",
-            type: "DropDown");
+            type: ComponentTypeEnum.dropDown.componentName);
       }
 
-      if (field.componentType == "CaptureImages") {
+      if (field.componentType ==
+          ComponentTypeEnum.captureImages.componentName) {
         imagesForSurvey.add(label);
       }
     }
@@ -157,6 +159,7 @@ class HomeCubit extends Cubit<HomeState> {
     formFields = orderedFormFields;
   }
 
+  ///clearing fields after submission
   void clearFields() {
     storedData.clear();
     // formFields.clear();

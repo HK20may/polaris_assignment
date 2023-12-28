@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:polaris_assignment/core/helpers/widgets_and_attributes.dart';
+import 'package:polaris_assignment/enums/component_type_enum.dart';
 import 'package:polaris_assignment/models/form_data.dart';
 import 'package:polaris_assignment/models/survey_form_model.dart';
 import 'package:polaris_assignment/view/cubit/home_cubit.dart';
@@ -29,7 +30,7 @@ class SurveyCaptureImageWidget extends StatelessWidget {
             homeCubit.formFields[metaInfo?.label ?? ""] = FormDataField(
                 label: metaInfo?.label ?? "",
                 galleryImages: selectedImages,
-                type: "CaptureImages");
+                type: ComponentTypeEnum.captureImages.componentName);
           },
           folderName: metaInfo?.savingFolder ?? "",
         ),
