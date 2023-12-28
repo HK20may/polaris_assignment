@@ -1,34 +1,63 @@
-import 'dart:io';
-import 'package:aws3_bucket/aws3_bucket.dart';
-import 'package:aws3_bucket/aws_region.dart';
-import 'package:aws3_bucket/iam_crediental.dart';
-import 'package:aws3_bucket/image_data.dart';
-// import 'package:aws_s3_upload/aws_s3_upload.dart';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
+
+import 'package:mime/mime.dart';
+import 'package:aws_common/aws_common.dart';
+import 'package:aws_signature_v4/aws_signature_v4.dart';
+import 'package:polaris_assignment/core/common/aws_constants.dart';
 
 class SurveyImageToServerService {
   Future<String?> uploadSurveyImageToServer(
-      File imageFile, String fileName) async {
+      Uint8List imageFile, String fileName, String folderName) async {
     try {
-      // var response = await AwsS3.uploadFile(
-      //     accessKey: "AKIARUYJYFCSRJUWGKQY",
-      //     secretKey: "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",
-      //     file: imageFile,
-      //     bucket: "assignments-list",
-      //     region: "ap-south-1",
-      //     filename: fileName);
-      IAMCrediental iamCrediental = IAMCrediental(
-          secretId: "AKIARUYJYFCSRJUWGKQY",
-          secretKey: "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");
-
-      ImageData imageData = ImageData(fileName, imageFile.path,
-          imageUploadFolder: "PolarisSurvey");
-      var response = await Aws3Bucket.upload("assignments-list",
-          AwsRegion.AP_SOUTH_1, AwsRegion.AP_SOUTH_1, imageData, iamCrediental);
-      return response;
+      return await generatingAwsSignature(
+          endpointUri: Uri.parse(buildFileUrlEndpoint(folderName, fileName)),
+          file: imageFile);
     } catch (e) {
       debugPrint("Error uploading $e");
       return null;
     }
+  }
+
+  String buildFileUrlEndpoint(String filePathOnBucket, String fileName) =>
+      'https://${AWSConstants.bucketName}.${AWSConstants.s3Service}.${AWSConstants.region}.amazonaws.com/$filePathOnBucket/$fileName';
+
+  Future<String?> generatingAwsSignature({
+    required Uri endpointUri,
+    required Uint8List file,
+  }) async {
+    const signer = AWSSigV4Signer(
+      credentialsProvider: AWSCredentialsProvider(
+        AWSCredentials(
+          AWSConstants.accessKeyId,
+          AWSConstants.secretAccessKey,
+          null,
+          null,
+        ),
+      ),
+    );
+    final scope = AWSCredentialScope(
+      region: AWSConstants.region,
+      service: AWSService.s3,
+    );
+    final request = AWSHttpRequest(
+      method: AWSHttpMethod.put,
+      uri: endpointUri,
+      headers: {
+        AWSHeaders.contentType: lookupMimeType(endpointUri.toString()) ?? '',
+      },
+      body: file,
+    );
+    final signedRequest = await signer.sign(
+      request,
+      credentialScope: scope,
+    );
+    final resp = await signedRequest.send().response;
+    if (resp.statusCode == 200) {
+      debugPrint("Image Url: $endpointUri");
+      return endpointUri.toString();
+    }
+
+    return null;
   }
 }

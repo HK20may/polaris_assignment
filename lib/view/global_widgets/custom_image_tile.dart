@@ -1,13 +1,11 @@
-import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:polaris_assignment/core/helpers/widgets_and_attributes.dart';
-import 'package:polaris_assignment/core/utils/toast.dart';
-import 'package:polaris_assignment/models/gallery_image_model.dart';
+import 'package:polaris_assignment/models/gallery_image.dart';
 
 class CustomImageTileWidget extends StatefulWidget {
   final int maxImageCount;
@@ -82,8 +80,8 @@ class _CustomImageTileWidgetState extends State<CustomImageTileWidget> {
           width: MediaQuery.of(context).size.width,
           child: ClipRRect(
             borderRadius: BorderRadius.circular(8),
-            child: Image.file(
-              selectedPics[index].file!,
+            child: Image.memory(
+              selectedPics[index].blobImage!,
               fit: BoxFit.contain,
             ),
           ),
@@ -117,34 +115,15 @@ class _CustomImageTileWidgetState extends State<CustomImageTileWidget> {
     for (int j = 0; j < widget.maxImageCount; j++) {
       final image = await ImagePicker().pickImage(source: ImageSource.camera);
       if (image != null) {
-        saveImage(File(image.path), widget.folderName, image.name);
+        Uint8List blobImage = await image.readAsBytes();
         capturedImages.add(GalleryImage(
-            file: File(image.path),
+            blobImage: blobImage,
             pictureName: image.name,
-            picturePath: image.path));
+            picturePath: widget.folderName));
       }
     }
     if (capturedImages.isNotEmpty) {
       selectedPics = capturedImages;
-    }
-  }
-
-  Future<void> saveImage(File image, String folderName, String fileName) async {
-    try {
-      final directory = await getExternalStorageDirectory();
-      final folderPath = '${directory!.path}/$folderName';
-
-      // Create the folder if it doesn't exist
-      await Directory(folderPath).create(recursive: true);
-
-      final filePath = '$folderPath/$fileName';
-
-      // Copy the image to the specified path
-      await image.copy(filePath);
-      Toast.info("Image saved in $folderName folder");
-      debugPrint('Image saved at: $filePath');
-    } catch (e) {
-      debugPrint('Error saving image: $e');
     }
   }
 }

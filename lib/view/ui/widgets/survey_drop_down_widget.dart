@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:polaris_assignment/models/form_data.dart';
 import 'package:polaris_assignment/models/survey_form_model.dart';
 import 'package:polaris_assignment/view/cubit/home_cubit.dart';
 import 'package:polaris_assignment/view/global_widgets/custom_drop_down_menu.dart';
@@ -27,6 +28,10 @@ class SurveyDropDownWidget extends StatelessWidget {
                 initialSelected: homeCubit.storedData[metaInfo?.label ?? ""],
                 selectedItem: (selectedValue) {
                   homeCubit.storedData[metaInfo?.label ?? ""] = selectedValue;
+                  homeCubit.formFields[metaInfo?.label ?? ""] = FormDataField(
+                      label: metaInfo?.label ?? "",
+                      textValue: selectedValue,
+                      type: "DropDown");
                 },
               )
             ],

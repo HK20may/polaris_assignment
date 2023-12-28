@@ -2,11 +2,11 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hive/hive.dart';
 import 'package:polaris_assignment/core/helpers/constants.dart';
 import 'package:polaris_assignment/core/isolate/background_thread.dart';
-import 'package:polaris_assignment/core/utils/shared_preference/shared_preference_constant.dart';
-import 'package:polaris_assignment/core/utils/shared_preference/shared_preference_helper.dart';
 import 'package:polaris_assignment/core/utils/toast.dart';
+import 'package:polaris_assignment/models/form_data.dart';
 import 'package:polaris_assignment/models/survey_form_model.dart';
 import 'package:polaris_assignment/view_model/service/survey_form_service.dart';
 
@@ -28,9 +28,13 @@ class HomeCubit extends Cubit<HomeState> {
 
   /// Map of storing all the typed data
   Map<String, dynamic> storedData = {};
+
   // variables for validation check
   bool isValidated = true;
   bool validationFailed = false;
+
+  FormData currentFormData = FormData();
+  Map<String, FormDataField> formFields = {};
 
   ///To fetch dynamic form data
   Future<void> fetchDynamicSurveyData() async {
@@ -56,10 +60,18 @@ class HomeCubit extends Cubit<HomeState> {
 
       if (field.componentType == "RadioGroup") {
         storedData[label] = metaInfo?.options?[0] ?? "";
+        formFields[label] = FormDataField(
+            label: label,
+            textValue: metaInfo?.options?[0] ?? "",
+            type: "RadioGroup");
       }
 
       if (field.componentType == "DropDown") {
         storedData[label] = metaInfo?.options?[0] ?? "";
+        formFields[label] = FormDataField(
+            label: label,
+            textValue: metaInfo?.options?[0] ?? "",
+            type: "DropDown");
       }
 
       if (field.componentType == "CaptureImages") {
@@ -88,6 +100,7 @@ class HomeCubit extends Cubit<HomeState> {
 
   ///To post data using the background thread
   Future<void> postSurveyData() async {
+    var surveyFormDb = Hive.box("survey_form_database");
     final connectivityResult = await (Connectivity().checkConnectivity());
     if (connectivityResult == ConnectivityResult.mobile ||
         connectivityResult == ConnectivityResult.wifi) {
@@ -96,36 +109,36 @@ class HomeCubit extends Cubit<HomeState> {
       orderFormResponse();
       debugPrint(storedData.toString());
 
-      //Uploading Image to server in the background thread
-      Map<String, dynamic> captureImageMap = {};
-      for (int i = 0; i < imagesForSurvey.length; i++) {
-        captureImageMap[imagesForSurvey[i]] = storedData[imagesForSurvey[i]];
-      }
-      PreferenceHelper.setJson(
-          SharedPreferenceConstant.CAPTURE_IMAGE_DATA, captureImageMap);
+      List<FormDataField> submittedFields = formFields.values.toList();
 
-      await backgroundThread(Constants.IMAGE_UPLOAD_WORKER);
+      currentFormData = FormData(
+          formName: surveyFormData?.formName ?? "",
+          submittedFields: submittedFields);
 
-      //Assigning values fetched from posting images
-      Map<String, dynamic> fetchedImageData = PreferenceHelper.getJson(
-          SharedPreferenceConstant.FETCHED_IMAGE_DATA, "");
+      await surveyFormDb.add(currentFormData);
 
-      for (String key in fetchedImageData.keys) {
-        storedData[key] = fetchedImageData[key];
-      }
+      backgroundThread(Constants.DATABASE_SYNC_SERVICE);
 
-      //Uploading Survey Data in the background thread
-      PreferenceHelper.setJson(
-          SharedPreferenceConstant.SURVEY_FORM_DATA, storedData);
-
-      await backgroundThread(Constants.SURVEY_UPLOAD_WORKER);
-
-      storedData.clear();
+      clearFields();
       initializingFetchedData();
       Toast.info("Form Submitted Successfully");
-      emit(HomeInitial());
+      emit(SurveyFormUploadSuccess(id: DateTime.now()));
     } else {
-      Toast.error("No Internet Connection Found.");
+      orderFormResponse();
+      debugPrint(storedData.toString());
+
+      List<FormDataField> submittedFields = formFields.values.toList();
+
+      currentFormData = FormData(
+          formName: surveyFormData?.formName ?? "",
+          submittedFields: submittedFields);
+
+      await surveyFormDb.add(currentFormData);
+
+      clearFields();
+      initializingFetchedData();
+      Toast.info("Form Stored Locally Successfully");
+      emit(SurveyFormUploadSuccess(id: DateTime.now()));
     }
   }
 
@@ -138,5 +151,16 @@ class HomeCubit extends Cubit<HomeState> {
       }
     }
     storedData = orderedData;
+    Map<String, FormDataField> orderedFormFields = {
+      for (var label in allFieldLabels) label: formFields[label]!
+    };
+    formFields = orderedFormFields;
+  }
+
+  void clearFields() {
+    storedData.clear();
+    // formFields.clear();
+    // currentFormData.delete();
+    allFieldLabels.clear();
   }
 }

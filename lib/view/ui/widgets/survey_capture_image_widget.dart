@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:polaris_assignment/core/helpers/widgets_and_attributes.dart';
+import 'package:polaris_assignment/models/form_data.dart';
 import 'package:polaris_assignment/models/survey_form_model.dart';
 import 'package:polaris_assignment/view/cubit/home_cubit.dart';
 import 'package:polaris_assignment/view/global_widgets/custom_image_tile.dart';
@@ -25,6 +26,10 @@ class SurveyCaptureImageWidget extends StatelessWidget {
           selectedImages: homeCubit.storedData[metaInfo?.label ?? ""] ?? [],
           onSelected: (selectedImages) {
             homeCubit.storedData[metaInfo?.label ?? ""] = selectedImages;
+            homeCubit.formFields[metaInfo?.label ?? ""] = FormDataField(
+                label: metaInfo?.label ?? "",
+                galleryImages: selectedImages,
+                type: "CaptureImages");
           },
           folderName: metaInfo?.savingFolder ?? "",
         ),

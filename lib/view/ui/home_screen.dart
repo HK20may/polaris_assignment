@@ -2,8 +2,9 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:polaris_assignment/core/helpers/color_constants.dart';
+import 'package:polaris_assignment/core/helpers/constants.dart';
 import 'package:polaris_assignment/core/helpers/widgets_and_attributes.dart';
-import 'package:polaris_assignment/core/utils/toast.dart';
+import 'package:polaris_assignment/core/isolate/background_thread.dart';
 import 'package:polaris_assignment/models/survey_form_model.dart';
 import 'package:polaris_assignment/view/cubit/home_cubit.dart';
 import 'package:polaris_assignment/view/global_widgets/primary_button.dart';
@@ -22,7 +23,6 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   late final HomeCubit _homeCubit = HomeCubit();
-  bool showToast = false;
 
   @override
   void initState() {
@@ -33,12 +33,9 @@ class _HomeScreenState extends State<HomeScreen> {
         if (_homeCubit.surveyFormData == null) {
           initData();
         }
-        if (showToast) {
-          Toast.info("Connection restored, Submit again to Proceed");
-        }
+        backgroundThread(Constants.DATABASE_SYNC_SERVICE);
         _hideInternetStatusSnackbar(context);
       } else {
-        showToast = true;
         _showInternetStatusSnackbar(context);
       }
     });
@@ -147,7 +144,7 @@ class _HomeScreenState extends State<HomeScreen> {
             color: Colors.red.shade600,
           ),
           sizedBoxW12,
-          Text("You need Internet to proceed",
+          Text("No Internet Found",
               style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w500,

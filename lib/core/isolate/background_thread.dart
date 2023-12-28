@@ -1,44 +1,37 @@
+import 'dart:isolate';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_isolate/flutter_isolate.dart';
+import 'package:hive/hive.dart';
+import 'package:polaris_assignment/core/database/database_sync_service.dart';
 import 'package:polaris_assignment/core/helpers/constants.dart';
-import 'package:polaris_assignment/core/isolate/worker/image_upload_worker.dart';
-import 'package:polaris_assignment/core/isolate/worker/survey_upload_worker.dart';
+import 'package:polaris_assignment/core/utils/globals.dart';
 import 'package:polaris_assignment/core/utils/shared_preference/shared_preference_helper.dart';
 
 Future<void> backgroundThread(String task) async {
   switch (task) {
-    case Constants.IMAGE_UPLOAD_WORKER:
-      await FlutterIsolate.spawn(
-          imageUploadWorker, Constants.IMAGE_UPLOAD_WORKER);
-      break;
-    case Constants.SURVEY_UPLOAD_WORKER:
-      await FlutterIsolate.spawn(
-          surveyUploadWorker, Constants.SURVEY_UPLOAD_WORKER);
+    case Constants.DATABASE_SYNC_SERVICE:
+      await Hive.box('survey_form_database').close();
+      final ReceivePort port = ReceivePort();
+      Map<String, dynamic> args = {
+        "path": Globals.databasePath ?? "",
+        "port": port.sendPort
+      };
+      port.listen((message) async {
+        if (message == true) {
+          await Hive.openBox('survey_form_database');
+        }
+      });
+      await FlutterIsolate.spawn(databaseSyncService, args);
       break;
   }
   return;
 }
 
 @pragma('vm:entry-point')
-imageUploadWorker(String workerName) async {
-  if (kDebugMode) {
-    debugPrint(" $workerName initialized");
-  }
+databaseSyncService(Map<String, dynamic> args) async {
   await PreferenceHelper.getInstance();
 
-  await ImageUploadWorker().doWork().then((value) {
-    debugPrint("ImageUploadWorker done");
+  await DatabaseSyncService().doWork(args["path"], args["port"]).then((value) {
+    debugPrint("Database Sync Service Done");
   });
-}
-
-@pragma('vm:entry-point')
-surveyUploadWorker(String workerName) async {
-  if (kDebugMode) {
-    debugPrint("$workerName initialized");
-  }
-  await PreferenceHelper.getInstance();
-
-  await SurveyUploadWorker()
-      .doWork()
-      .then((value) => debugPrint("SurveyUploadWorker done"));
 }

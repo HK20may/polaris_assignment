@@ -29,3 +29,11 @@ final class SurveyFormError extends HomeState {
 }
 
 final class SurveyFormUploadLoading extends HomeState {}
+
+final class SurveyFormUploadSuccess extends HomeState {
+  final DateTime id;
+  const SurveyFormUploadSuccess({required this.id});
+
+  @override
+  List<Object> get props => [id];
+}

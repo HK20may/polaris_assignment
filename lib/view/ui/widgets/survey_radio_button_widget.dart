@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:polaris_assignment/core/helpers/widgets_and_attributes.dart';
+import 'package:polaris_assignment/models/form_data.dart';
 import 'package:polaris_assignment/models/survey_form_model.dart';
 import 'package:polaris_assignment/view/cubit/home_cubit.dart';
 import 'package:polaris_assignment/view/global_widgets/custom_radio_button.dart';
@@ -25,6 +26,10 @@ class SurveyRadioButtonWidget extends StatelessWidget {
           selectedOption: homeCubit.storedData[metaInfo?.label ?? ""],
           selectedItem: (selectedOption) {
             homeCubit.storedData[metaInfo?.label ?? ""] = selectedOption;
+            homeCubit.formFields[metaInfo?.label ?? ""] = FormDataField(
+                label: metaInfo?.label ?? "",
+                textValue: selectedOption,
+                type: "RadioGroup");
           },
         ),
         if ((metaInfo?.mandatory?.toLowerCase() == 'yes') &&

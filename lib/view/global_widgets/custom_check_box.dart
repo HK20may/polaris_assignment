@@ -3,16 +3,10 @@ import 'package:polaris_assignment/core/helpers/color_constants.dart';
 import 'package:polaris_assignment/models/check_box_field_model.dart';
 
 class CustomCheckBox extends StatefulWidget {
-  // final List<String> checkBoxList;
-  // final List<bool> selectedOptions;
   final CheckboxField checkboxField;
   final Function(CheckboxField)? selectedItemsListFunction;
   const CustomCheckBox(
-      {super.key,
-      // required this.checkBoxList,
-      // required this.selectedOptions,
-      required this.checkboxField,
-      this.selectedItemsListFunction});
+      {super.key, required this.checkboxField, this.selectedItemsListFunction});
 
   @override
   State<CustomCheckBox> createState() => _CustomCheckBoxState();
@@ -65,11 +59,6 @@ class _CustomCheckBoxState extends State<CustomCheckBox> {
                     selectedItemsList.selectedOptions.remove(option);
                   }
                   widget.selectedItemsListFunction!(selectedItemsList);
-                  // widget.selectedOptions[index] = value!;
-                  // if (!selectedItemsList.contains(widget.checkBoxList[index])) {
-                  //   selectedItemsList.add(widget.checkBoxList[index]);
-                  //   widget.selectedItemsListFunction!(selectedItemsList);
-                  // }
                 });
               },
               activeColor: ColorConstants.primary),

@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:polaris_assignment/core/helpers/widgets_and_attributes.dart';
+import 'package:polaris_assignment/models/form_data.dart';
 import 'package:polaris_assignment/models/survey_form_model.dart';
 import 'package:polaris_assignment/view/cubit/home_cubit.dart';
 import 'package:polaris_assignment/view/global_widgets/custom_text_field.dart';
@@ -36,6 +37,10 @@ class SurveyTextFieldWidget extends StatelessWidget {
           maxLength: metaInfo?.componentInputType == "INTEGER" ? 10 : null,
           textWatcher: (value) {
             homeCubit.storedData[metaInfo?.label ?? ""] = value;
+            homeCubit.formFields[metaInfo?.label ?? ""] = FormDataField(
+                label: metaInfo?.label ?? "",
+                textValue: value,
+                type: "EditText");
           },
         ),
         sizedBoxH4,

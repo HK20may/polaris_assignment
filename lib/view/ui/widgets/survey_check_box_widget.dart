@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:polaris_assignment/core/helpers/widgets_and_attributes.dart';
 import 'package:polaris_assignment/models/check_box_field_model.dart';
+import 'package:polaris_assignment/models/form_data.dart';
 import 'package:polaris_assignment/models/survey_form_model.dart';
 import 'package:polaris_assignment/view/cubit/home_cubit.dart';
 import 'package:polaris_assignment/view/global_widgets/custom_check_box.dart';
@@ -31,6 +32,11 @@ class SurveyCheckBoxWidget extends StatelessWidget {
           selectedItemsListFunction: (checkboxField) {
             homeCubit.storedData[checkboxField.label] =
                 checkboxField.selectedOptions;
+
+            homeCubit.formFields[metaInfo?.label ?? ""] = FormDataField(
+                label: metaInfo?.label ?? "",
+                checkBoxValue: checkboxField.selectedOptions,
+                type: "CheckBoxes");
           },
         ),
         if ((metaInfo?.mandatory?.toLowerCase() == 'yes') &&
