@@ -4,15 +4,16 @@ import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:polaris_assignment/core/database/database_setup.dart';
-import 'package:polaris_assignment/core/helpers/color_constants.dart';
+import 'package:polaris_assignment/core/database/hive/database_setup.dart';
+import 'package:polaris_assignment/core/theme/color_constants.dart';
 import 'package:polaris_assignment/core/utils/globals.dart';
 import 'package:polaris_assignment/core/utils/routes/route_generator.dart';
 import 'package:polaris_assignment/core/utils/routes/route_helper.dart';
-import 'package:polaris_assignment/core/utils/shared_preference/shared_preference_helper.dart';
-import 'package:polaris_assignment/models/form_data.dart';
-import 'package:polaris_assignment/models/gallery_image.dart';
-import 'package:polaris_assignment/view/ui/splash_screen.dart';
+import 'package:polaris_assignment/core/database/shared_preference/shared_preference_helper.dart';
+import 'package:polaris_assignment/data/models/form_data/form_data.dart';
+import 'package:polaris_assignment/data/models/form_data_field/form_data_field.dart';
+import 'package:polaris_assignment/data/models/gallery_image/gallery_image.dart';
+import 'package:polaris_assignment/presentation/screens/splash_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -50,9 +51,11 @@ class MainApp extends StatelessWidget {
       theme: ThemeData(
           primarySwatch: Colors.teal,
           primaryColor: ColorConstants.primary,
-          splashColor: Colors.transparent,
+          splashColor: ColorConstants.splashColor,
+          focusColor: ColorConstants.splashColor,
           visualDensity: VisualDensity.adaptivePlatformDensity,
-          unselectedWidgetColor: const Color(0xFF787878)),
+          useMaterial3: true,
+          unselectedWidgetColor: ColorConstants.splashColor),
       home: const SplashScreen(),
     );
   }

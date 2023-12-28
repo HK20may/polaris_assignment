@@ -1,5 +1,5 @@
-import 'package:polaris_assignment/models/gallery_image.dart';
-import 'package:polaris_assignment/view_model/service/survey_image_to_server_service.dart';
+import 'package:polaris_assignment/data/datasources/survey_image_to_server_source.dart';
+import 'package:polaris_assignment/data/models/gallery_image/gallery_image.dart';
 
 class ImageUploadWorker {
   /// Starts to [doWork] ie upload image to server in the background

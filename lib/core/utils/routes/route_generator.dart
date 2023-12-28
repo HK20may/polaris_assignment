@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:polaris_assignment/core/utils/routes/routes.dart';
-import 'package:polaris_assignment/view/ui/home_screen.dart';
+import 'package:polaris_assignment/presentation/screens/home_screen.dart';
 
 class RouteGenerator {
   static Route<dynamic> generateRoute(RouteSettings settings) {

@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:polaris_assignment/core/utils/api/api_logging_interceptor.dart';
-import 'package:polaris_assignment/core/utils/toast.dart';
+import 'package:polaris_assignment/core/widgets/toast.dart';
 
 class ApiCallHelper {
   factory ApiCallHelper() {
