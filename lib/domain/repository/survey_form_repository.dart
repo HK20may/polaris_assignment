@@ -2,6 +2,7 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:hive/hive.dart';
 import 'package:polaris_assignment/core/constants/constants.dart';
 import 'package:polaris_assignment/core/isolate/background_task.dart';
+import 'package:polaris_assignment/core/utils/globals.dart';
 import 'package:polaris_assignment/data/datasources/survey_form_source.dart';
 import 'package:polaris_assignment/data/models/form_data/form_data.dart';
 import 'package:polaris_assignment/data/models/survey_form_model.dart';
@@ -12,6 +13,9 @@ class SurveyFormRepository {
   }
 
   Future<void> saveData(FormData currentFormData) async {
+    if (!Hive.isBoxOpen("survey_form_database")) {
+      await Hive.openBox("survey_form_database");
+    }
     var surveyFormDb = Hive.box("survey_form_database");
     await surveyFormDb.add(currentFormData);
   }
@@ -23,6 +27,9 @@ class SurveyFormRepository {
   }
 
   void syncData() {
-    BackgroundTask.doWork(Constants.DATABASE_SYNC_SERVICE);
+    if (!Globals.dbSyncServiceInProgress) {
+      Globals.dbSyncServiceInProgress = true;
+      BackgroundTask.doWork(Constants.DATABASE_SYNC_SERVICE);
+    }
   }
 }

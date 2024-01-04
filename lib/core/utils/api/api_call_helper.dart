@@ -1,8 +1,8 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:polaris_assignment/core/utils/api/api_logging_interceptor.dart';
-import 'package:polaris_assignment/core/widgets/toast.dart';
 
 class ApiCallHelper {
   factory ApiCallHelper() {
@@ -22,18 +22,18 @@ class ApiCallHelper {
       if (response.statusCode == 200) {
         return response.data;
       } else {
-        Toast.error("Something went wrong");
+        log("Something went wrong");
         throw Exception('Failed to make GET request: ${response.statusCode}');
       }
     } catch (dioError) {
       if (dioError is DioException) {
         if (dioError.error is SocketException) {
-          Toast.error("No Internet Connection");
+          log("No Internet Connection");
         } else {
-          Toast.error("Something went wrong");
+          log("Something went wrong");
         }
       }
-      Toast.error("Something went wrong");
+      log("Something went wrong");
       throw Exception('Failed to make GET request: $dioError');
     }
   }
@@ -45,7 +45,7 @@ class ApiCallHelper {
       if (response.statusCode == 200 || response.statusCode == 201) {
         return response.data;
       } else {
-        Toast.error("Something went wrong");
+        log("Something went wrong");
         throw Exception('Failed to make Post request: ${response.statusCode}');
       }
     }
@@ -55,12 +55,12 @@ class ApiCallHelper {
     catch (dioError) {
       if (dioError is DioException) {
         if (dioError.error is SocketException) {
-          Toast.error("No Internet Connection");
+          log("No Internet Connection");
         } else {
-          Toast.error("Something went wrong");
+          log("Something went wrong");
         }
       }
-      Toast.error("Something went wrong");
+      log("Something went wrong");
       throw Exception('Failed to make GET request: $dioError');
     }
   }

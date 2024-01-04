@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:developer';
+
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -6,6 +9,7 @@ import 'package:polaris_assignment/core/theme/color_constants.dart';
 import 'package:polaris_assignment/core/constants/constants.dart';
 import 'package:polaris_assignment/core/theme/widgets_and_attributes.dart';
 import 'package:polaris_assignment/core/isolate/background_task.dart';
+import 'package:polaris_assignment/core/utils/globals.dart';
 import 'package:polaris_assignment/core/widgets/primary_button.dart';
 import 'package:polaris_assignment/data/enums/component_type_enum.dart';
 import 'package:polaris_assignment/data/models/survey_form_model.dart';
@@ -28,23 +32,42 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void initState() {
+    if (_homeCubit.surveyFormData == null) {
+      initData();
+    }
     Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
       if (result == ConnectivityResult.mobile ||
           result == ConnectivityResult.wifi) {
         if (_homeCubit.surveyFormData == null) {
           initData();
         }
-        BackgroundTask.doWork(Constants.DATABASE_SYNC_SERVICE);
+        if (!Globals.dbSyncServiceInProgress) {
+          Globals.dbSyncServiceInProgress = true;
+          BackgroundTask.doWork(Constants.DATABASE_SYNC_SERVICE);
+        }
         _hideInternetStatusSnackbar(context);
       } else {
         _showInternetStatusSnackbar(context);
       }
     });
+
+    startPeriodicTask();
     super.initState();
   }
 
   Future<void> initData() async {
     await _homeCubit.fetchDynamicSurveyData();
+  }
+
+  void startPeriodicTask() {
+    Timer.periodic(const Duration(seconds: 60), (timer) {
+      // This function will be called every 1 minute
+      if (!Globals.dbSyncServiceInProgress) {
+        log('Running periodic database syncing at ${DateTime.now()}');
+        Globals.dbSyncServiceInProgress = true;
+        BackgroundTask.doWork(Constants.DATABASE_SYNC_SERVICE);
+      }
+    });
   }
 
   @override

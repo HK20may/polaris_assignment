@@ -61,12 +61,18 @@ class DatabaseSyncService {
       log("Posting data to Server");
 
       //posting the the data
-      await SurveyUploadWorker()
-          .doWork(resultMap)
-          .then((value) => log("SurveyUploadWorker done"));
+      try {
+        await SurveyUploadWorker()
+            .doWork(resultMap)
+            .then((value) => log("SurveyUploadWorker done"));
+      } catch (e) {
+        port.send(true);
+        log("Error Posting Data. Will Try Again in a minute");
+        return;
+      }
     }
 
-    surveyFormDb.clear();
+    await surveyFormDb.clear();
     port.send(true);
     log("Database Cleared");
   }

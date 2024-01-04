@@ -21,6 +21,7 @@ class BackgroundTask {
           if (message == true) {
             await Hive.openBox('survey_form_database');
           }
+          Globals.dbSyncServiceInProgress = false;
         });
         await FlutterIsolate.spawn(databaseSyncService, args);
         break;

@@ -38,7 +38,11 @@ class PreferenceHelper {
   }
 
   static dynamic getJson(String key, dynamic defValue) {
-    return json.decode(_preferences.getString(key)!) ?? defValue;
+    if (_preferences.getString(key) != null) {
+      return json.decode(_preferences.getString(key) ?? "") ?? defValue;
+    } else {
+      return "";
+    }
   }
 
   static Future<bool> setInt(String key, int value) async {
