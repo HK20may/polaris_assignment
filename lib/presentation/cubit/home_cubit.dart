@@ -41,6 +41,7 @@ class HomeCubit extends Cubit<HomeState> {
     try {
       surveyFormData = await GetFormData().onExecute();
     } catch (e) {
+      Toast.error("Something went wrong");
       debugPrint(e.toString());
     }
 

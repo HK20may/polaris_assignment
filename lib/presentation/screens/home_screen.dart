@@ -13,6 +13,7 @@ import 'package:polaris_assignment/core/utils/globals.dart';
 import 'package:polaris_assignment/core/widgets/primary_button.dart';
 import 'package:polaris_assignment/data/enums/component_type_enum.dart';
 import 'package:polaris_assignment/data/models/survey_form_model.dart';
+import 'package:polaris_assignment/domain/repository/survey_form_repository.dart';
 import 'package:polaris_assignment/presentation/cubit/home_cubit.dart';
 import 'package:polaris_assignment/presentation/widgets/survey_capture_image_widget.dart';
 import 'package:polaris_assignment/presentation/widgets/survey_check_box_widget.dart';
@@ -32,9 +33,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void initState() {
-    if (_homeCubit.surveyFormData == null) {
-      initData();
-    }
+    internetCheckData();
     Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
       if (result == ConnectivityResult.mobile ||
           result == ConnectivityResult.wifi) {
@@ -184,6 +183,14 @@ class _HomeScreenState extends State<HomeScreen> {
         bottomNavigationBar: _buildButton(),
       ),
     );
+  }
+
+  Future<void> internetCheckData() async {
+    if (!(await SurveyFormRepository().checkConnectivity())) {
+      // ignore: use_build_context_synchronously
+      _showInternetStatusSnackbar(context);
+      await initData();
+    }
   }
 
   void _showInternetStatusSnackbar(BuildContext context) {
